@@ -83,10 +83,29 @@ def _run_session(client, supervisor_logger, sub_agents, session_id) -> None:
             ]
 
             while True:
-                response = client.chat.completions.create(
-                    model=os.getenv("OPENAI_MODEL", "gpt-4o-mini"), messages=messages, tools=tools
-                )
-                message = response.choices[0].message
+                with session_span.start_span(
+                    name="supervisor_llm_call", type="llm", set_current=False
+                ) as llm_span:
+                    response = client.chat.completions.create(
+                        model=os.getenv("OPENAI_MODEL", "gpt-4o-mini"),
+                        messages=messages,
+                        tools=tools,
+                    )
+                    message = response.choices[0].message
+                    llm_output = (
+                        {"tool_calls": [call.function.name for call in message.tool_calls]}
+                        if message.tool_calls
+                        else {"response_returned": True}
+                    )
+                    llm_span.log(
+                        input=query,
+                        output=llm_output,
+                        metadata={
+                            "SessionId": session_id,
+                            "model": response.model,
+                            "usage": response.usage.model_dump() if response.usage else None,
+                        },
+                    )
                 messages.append(message)
                 if not message.tool_calls:
                     print(f"\nAssistant: {message.content or ''}")

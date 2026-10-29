@@ -32,7 +32,8 @@ initialized in the main process with separate `BraintrustState` instances and th
 project-scoped keys. This uses a lower-level Braintrust SDK API; the SDK's global helpers and
 `wrap_openai` are not used for these traces. A generated `SessionId` metadata field is attached
 to the supervisor, specialist, LLM, and Tavily spans so traces from one interactive session can
-be correlated across all three projects.
+be correlated across all three projects. The supervisor's OpenAI calls are logged as `llm` spans;
+they record the selected tool name or a response marker without logging specialist results.
 
 Then, from the repository root:
 
