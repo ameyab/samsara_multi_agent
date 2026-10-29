@@ -1,0 +1,20 @@
+[project]
+name = "samsara-multi-agent"
+version = "0.1.0"
+description = "A simple supervisor and specialist agent demo"
+readme = "README.md"
+authors = [
+    { name = "Ameya Bhatawdekar", email = "ameyab@ameyab.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "braintrust>=0.48.1",
+    "openai>=3.41.0",
+]
+
+[project.scripts]
+samsara-multi-agent = "samsara_multi_agent:main"
+
+[build-system]
+requires = ["uv_build>=0.12.5,<0.13.0"]
+build-backend = "uv_build"
